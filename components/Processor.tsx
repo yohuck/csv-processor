@@ -1,6 +1,11 @@
 import React from "react";
+import { States, StateEnum } from "../typedefs/states";
+import { stateFormatter } from "../utils/state_processor";
+
+
 
 export const Processor = (removeHeader: boolean = true) => {
+
   const onSubmit = (e) => {
     const csvFile = document.getElementById("upload")   
     //prevent default
@@ -11,9 +16,8 @@ export const Processor = (removeHeader: boolean = true) => {
     const reader = new FileReader();
     reader.onload = function(event){
         const text = event.target.result;
-        const toObject = ( input ) => {
+        const toJs = ( input ) => {
             return input.split('\r')
-
         }
 
         const splitData = (input: string) => {
@@ -23,13 +27,16 @@ export const Processor = (removeHeader: boolean = true) => {
         const removeNewLine = (input: string) => {
             return input.split('\n').join('')
         }
+
+
     
-        let rows = toObject(text)
+        let rows = toJs(text)
         removeHeader && rows.splice(0,1) 
         rows = rows.map(row => splitData(row))
-        console.log(rows)
         rows.forEach(row => {
             row[0] = removeNewLine(row[0])
+            console.log(row)
+            row[0] = stateFormatter(row[0])
             console.log(row)
         })
         console.log(rows)

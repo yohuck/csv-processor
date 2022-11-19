@@ -56,5 +56,3 @@ export enum States {
 }
 
 
-export const StateEnum = z.enum(States);
-

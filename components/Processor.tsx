@@ -1,59 +1,72 @@
-import React from "react";
-import { States, StateEnum } from "../typedefs/states";
 import { stateFormatter } from "../utils/state_processor";
 
+type CSV = HTMLElement & {
+  files: Blob[];
+};
 
+type ReaderReturn = Event & {
+  target: CSV;
+};
 
-export const Processor = (removeHeader: boolean = true) => {
+const toJs = (input: string) => {
+  return input.split("\r");
+};
 
-  const onSubmit = (e) => {
-    const csvFile = document.getElementById("upload")   
-    //prevent default
+const splitData = (input: string) => {
+  return input.split(",");
+};
+
+const removeNewLine = (input: string) => {
+  return input.split("\n").join("");
+};
+
+export const Processor = () => {
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const csvFile = document.getElementById("upload") as CSV;
     e.preventDefault();
-    console.log(e);
     const input = csvFile.files[0];
-    console.log(input)
     const reader = new FileReader();
-    reader.onload = function(event){
-        const text = event.target.result;
-        const toJs = ( input ) => {
-            return input.split('\r')
-        }
-
-        const splitData = (input: string) => {
-            return input.split(',')
-        }
-
-        const removeNewLine = (input: string) => {
-            return input.split('\n').join('')
-        }
-
-
-    
-        let rows = toJs(text)
-        removeHeader && rows.splice(0,1) 
-        rows = rows.map(row => splitData(row))
-        rows.forEach(row => {
-            row[0] = removeNewLine(row[0])
-            console.log(row)
-            row[0] = stateFormatter(row[0])
-            console.log(row)
-        })
-        console.log(rows)
+    reader.onload = async (event: Event) => {
+      if (event.target != null && event.target instanceof FileReader) {
+        const text = event.target.result as string;
+        let rows: string[] = toJs(text);
+        rows.splice(0, 1);
+        let splitRows = rows.map((row) => splitData(row));
+        splitRows.forEach((row) => {
+          row[0] = removeNewLine(row[0]);
+          row[0] = stateFormatter(row[0]);
+        });
+        rows = rows.filter((row) => row[0] != "NA");
         document.write(JSON.stringify(rows));
-    }
+      }
+    };
 
-    reader.readAsText(input)
-    };  
-    
-  return(
-    <div className="flex flex-col gap-2 items-center">
-        <h1 className='text-4xl text-emerald-500'>Will it parse?</h1>
-        <form onSubmit={onSubmit} className="p-4 gap-2 justify-between flex flex-col bg-slate-600 max-w-xl">
-            <label htmlFor="upload">Upload CSV</label>
-            <input type="file" name="upload" id="upload" className="border-2" />
-            <button className="p-2 border-2" type="submit">Submit</button>
-        </form>
+    reader.readAsText(input);
+  };
+
+  return (
+    <div className="flex flex-col gap-2 items-center text-emerald-500 font-mono">
+      <h1 className="text-2xl">Event CSV Processor</h1>
+      <form
+        onSubmit={onSubmit}
+        className=" border-2 border-emerald-500 p-4 gap-2 justify-between flex flex-col max-w-xl"
+      >
+        <label htmlFor="upload" className="text-lg">
+          Upload CSV
+        </label>
+        <input
+          type="file"
+          name="upload"
+          id="upload"
+          className="border-2 border-emerald-500"
+        />
+        <button
+          className="p-2 border-2 hover:bg-neutral-900 border-emerald-500"
+          type="submit"
+        >
+          Process
+        </button>
+      </form>
     </div>
-  )
+  );
 };

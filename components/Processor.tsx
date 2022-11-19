@@ -4,10 +4,6 @@ type CSV = HTMLElement & {
   files: Blob[];
 };
 
-type ReaderReturn = Event & {
-  target: CSV;
-};
-
 const toJs = (input: string) => {
   return input.split("\r");
 };
@@ -26,21 +22,21 @@ export const Processor = () => {
     e.preventDefault();
     const input = csvFile.files[0];
     const reader = new FileReader();
-    reader.onload = async (event: Event) => {
-      if (event.target != null && event.target instanceof FileReader) {
-        const text = event.target.result as string;
-        let rows: string[] = toJs(text);
-        rows.splice(0, 1);
-        let splitRows = rows.map((row) => splitData(row));
-        splitRows.forEach((row) => {
-          row[0] = removeNewLine(row[0]);
-          row[0] = stateFormatter(row[0]);
-        });
-        rows = rows.filter((row) => row[0] != "NA");
-        document.write(JSON.stringify(rows));
-      }
+    reader.onload = async(event) => {
+      let text = ''
+      if (event.target != null) {
+        text = event.target.result as string;
+      } 
+      let rows: string[] = toJs(text);
+      rows.splice(0, 1);
+      let splitRows = rows.map((row) => splitData(row));
+      splitRows.forEach((row) => {
+        row[0] = removeNewLine(row[0]);
+        row[0] = stateFormatter(row[0]);
+      });
+      splitRows = splitRows.filter((row) => row[0] != "NA");
+      document.write(JSON.stringify(splitRows));
     };
-
     reader.readAsText(input);
   };
 

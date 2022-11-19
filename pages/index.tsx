@@ -11,10 +11,10 @@ type HomeProps = {
   children: React.ReactNode;
 };
 
-export const Home = () => {
+export default function Home() {
   return (
     <div className="wrapper">
       <Processor />
     </div>
   );
-};
+}

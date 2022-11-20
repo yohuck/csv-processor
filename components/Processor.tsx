@@ -1,19 +1,8 @@
-import { stateFormatter } from "../utils/state_processor";
+import { toObject, CSVToObj } from "../utils/toObject";
+import { stateFormatter } from "../utils/stateFormatter";
 
 type CSV = HTMLElement & {
   files: Blob[];
-};
-
-const toJs = (input: string) => {
-  return input.split("\r");
-};
-
-const splitData = (input: string) => {
-  return input.split(",");
-};
-
-const removeNewLine = (input: string) => {
-  return input.split("\n").join("");
 };
 
 export const Processor = () => {
@@ -22,20 +11,17 @@ export const Processor = () => {
     e.preventDefault();
     const input = csvFile.files[0];
     const reader = new FileReader();
-    reader.onload = async(event) => {
-      let text = ''
+    reader.onload = async (event) => {
+      let text = "";
       if (event.target != null) {
         text = event.target.result as string;
-      } 
-      let rows: string[] = toJs(text);
-      rows.splice(0, 1);
-      let splitRows = rows.map((row) => splitData(row));
-      splitRows.forEach((row) => {
-        row[0] = removeNewLine(row[0]);
-        row[0] = stateFormatter(row[0]);
+      }
+      const rowArr: CSVToObj[] = toObject(text);
+      rowArr.forEach((row) => {
+        row["State"] = stateFormatter(row["State"]);
       });
-      splitRows = splitRows.filter((row) => row[0] != "NA");
-      document.write(JSON.stringify(splitRows));
+      console.log(rowArr);
+      document.write(JSON.stringify(rowArr));
     };
     reader.readAsText(input);
   };

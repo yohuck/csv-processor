@@ -53,12 +53,11 @@ export const states = [
     'DC'
 ] 
 
-type State = typeof states[number];
+export type State = typeof states[number];
 
 
 
 export const stateFormatter = (state: string): State => {
-
   if (states.includes(state.toUpperCase())) {
     return state.toUpperCase() as State;
   } else {

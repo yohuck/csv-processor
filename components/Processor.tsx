@@ -1,5 +1,7 @@
 import { toObject, CSVToObj } from "../utils/toObject";
 import { stateFormatter } from "../utils/stateFormatter";
+import { download } from "../utils/download";
+import { objectToCSV } from "../utils/objectToCSV";
 
 type CSV = HTMLElement & {
   files: Blob[];
@@ -20,8 +22,10 @@ export const Processor = () => {
       rowArr.forEach((row) => {
         row["State"] = stateFormatter(row["State"]);
       });
-      console.log(rowArr);
-      document.write(JSON.stringify(rowArr));
+      const csvDL = objectToCSV(rowArr)
+      download("processed.csv", csvDL)
+      // document.write(JSON.stringify(rowArr));
+      
     };
     reader.readAsText(input);
   };

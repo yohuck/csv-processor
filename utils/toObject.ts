@@ -4,7 +4,8 @@ export type CSVToObj = {
   First_Name: string;
   Last_Name: string;
   State: State;
-  Grad_Year: number;
+  Grad_Year: string;
+  Age_Group?: string;
 };
 // export const inputCSV = "State,Grad_Year,First_Name,Last_Name\nTexas,2024,Waylon,Jennings\nTX,2025,Willie,Nelson\nAlabama,2025,Hank,Williams\nOK,2026,Reba,McEntire\nCanada,2023,Shania,Twain\nTennessee,2024,Dolly,Parton"
 

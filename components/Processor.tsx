@@ -2,6 +2,7 @@ import { toObject, CSVToObj } from "../utils/toObject";
 import { stateFormatter } from "../utils/stateFormatter";
 import { download } from "../utils/download";
 import { objectToCSV } from "../utils/objectToCSV";
+import { gradYearLookUp } from "../utils/gradYearLookUp";
 
 type CSVBlob = Blob & { name: string}
 
@@ -24,6 +25,7 @@ export const Processor = () => {
       const rowArr: CSVToObj[] = toObject(text);
       rowArr.forEach((row) => {
         row["State"] = stateFormatter(row["State"]);
+        row["Grad_Year"] = gradYearLookUp(row["Age_Group"], row["Grad_Year"]);
       });
       const csvDL = objectToCSV(rowArr)
       download(`${title}-processed.csv`, csvDL)      

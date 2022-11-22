@@ -3,14 +3,17 @@ import { stateFormatter } from "../utils/stateFormatter";
 import { download } from "../utils/download";
 import { objectToCSV } from "../utils/objectToCSV";
 
+type CSVBlob = Blob & { name: string}
+
 type CSV = HTMLElement & {
-  files: Blob[];
+  files: CSVBlob[] 
 };
 
 export const Processor = () => {
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    const csvFile = document.getElementById("upload") as CSV;
     e.preventDefault();
+    const csvFile = document.getElementById("upload") as CSV;
+    const title = csvFile.files[0].name.split(".")[0];
     const input = csvFile.files[0];
     const reader = new FileReader();
     reader.onload = async (event) => {
@@ -23,9 +26,7 @@ export const Processor = () => {
         row["State"] = stateFormatter(row["State"]);
       });
       const csvDL = objectToCSV(rowArr)
-      download("processed.csv", csvDL)
-      // document.write(JSON.stringify(rowArr));
-      
+      download(`${title}-processed.csv`, csvDL)      
     };
     reader.readAsText(input);
   };
